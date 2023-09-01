@@ -1,40 +1,36 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class LogicaBarco : MonoBehaviour
+public class Barco : MonoBehaviour
 {
     private new Rigidbody rigidbody;
-    private CapsuleCollider capsuleCollider;
 
     public float speed = 10f;
+    public float rotationSpeed = 30f; // Velocidad de giro en grados por segundo
 
     void Start()
     {
         rigidbody = GetComponent<Rigidbody>();
-        capsuleCollider = GetComponent<CapsuleCollider>();
     }
 
     void Update()
     {
         // Obtener las entradas de movimiento
-        float horizontalInput = Input.GetAxisRaw("Horizontal");
-        float verticalInput = Input.GetAxisRaw("Vertical");
+        float horizontalInput = Input.GetAxis("Horizontal");
+        float verticalInput = Input.GetAxis("Vertical");
 
-        // Solo permitir movimiento hacia adelante o giro
-        if (verticalInput > 0f)
-        {
-            // Calcular la dirección del movimiento en el plano XZ
-            Vector3 movementDirection = new Vector3(horizontalInput, 0f, verticalInput).normalized;
+        // Calcular el ángulo de giro basado en la entrada horizontal
+        float rotationAngle = horizontalInput * rotationSpeed * Time.deltaTime;
 
-            if (movementDirection != Vector3.zero)
-            {
-                // Calcular la posición objetivo
-                Vector3 targetPosition = transform.position + movementDirection * speed * Time.deltaTime;
+        // Girar el objeto alrededor de su eje vertical (up)
+        transform.Rotate(Vector3.up, rotationAngle);
 
-                // Mover el objeto utilizando MovePosition para que resuelva colisiones automáticamente
-                rigidbody.MovePosition(targetPosition);
-            }
-        }
+        // Calcular la dirección del movimiento en el plano XZ
+        Vector3 forwardMovement = transform.forward * verticalInput * speed * Time.deltaTime;
+
+        // Calcular la posición objetivo
+        Vector3 targetPosition = rigidbody.position + forwardMovement;
+
+        // Mover el objeto utilizando MovePosition para que resuelva colisiones automáticamente
+        rigidbody.MovePosition(targetPosition);
     }
 }

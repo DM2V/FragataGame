@@ -4,20 +4,22 @@ using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
-    public Transform target;        // El objeto que la cámara seguirá
-    public Vector3 offset = new Vector3(41, 26, -100);       // La distancia entre la cámara y el objetivo
-    public float smoothSpeed = 0.125f;  // La velocidad de suavizado
+    public Transform target; // El objeto del barco al que la cámara debe seguir
+    public float smoothSpeed = 0.125f;
+    public Vector3 offset; // Ajusta los valores como necesites
 
-    private void LateUpdate()
+    private Vector3 velocity = Vector3.zero;
+
+    void LateUpdate()
     {
-        // Calcula la posición deseada de la cámara
+        // Calcula la posición deseada de la cámara sumando la posición del barco y el offset
         Vector3 desiredPosition = target.position + offset;
-        // Interpola suavemente hacia la posición deseada
-        Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
-        // Actualiza la posición de la cámara
+
+        // Interpola suavemente la posición actual de la cámara hacia la posición deseada
+        Vector3 smoothedPosition = Vector3.SmoothDamp(transform.position, desiredPosition, ref velocity, smoothSpeed);
         transform.position = smoothedPosition;
 
-        // Asegura que la cámara mire hacia el objetivo
+        // Hace que la cámara mire al barco
         transform.LookAt(target);
     }
 }
